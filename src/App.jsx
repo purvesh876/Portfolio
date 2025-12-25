@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import About from './components/About'
@@ -8,22 +8,26 @@ import Projects from './components/Projects'
 import Achievements from './components/Achievements'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import { BackgroundGrid, NoiseOverlay, GradientOrbs } from './components/BackgroundEffects'
+import { useSmoothScroll } from './hooks/useSmoothScroll'
 
 function App() {
   const [scrolled, setScrolled] = useState(false)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+  // Use Lenis scroll event instead of window scroll
+  const handleScroll = useCallback((scroll) => {
+    setScrolled(scroll > 50)
   }, [])
 
+  useSmoothScroll(handleScroll)
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <BackgroundGrid />
+      <NoiseOverlay />
+      <GradientOrbs />
       <Navbar scrolled={scrolled} />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <About />
         <Skills />

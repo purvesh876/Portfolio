@@ -1,10 +1,12 @@
-import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
 
 const Experience = () => {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  })
 
   const experiences = [
     {
@@ -14,6 +16,7 @@ const Experience = () => {
       description:
         'Leading frontend development initiatives, building scalable React applications, and mentoring junior developers. Responsible for architecture decisions and implementing best practices.',
       tags: ['React', 'TypeScript', 'Next.js'],
+      color: 'from-blue-500/20 to-cyan-500/20',
     },
     {
       title: 'Full Stack Developer',
@@ -22,6 +25,7 @@ const Experience = () => {
       description:
         'Developed and maintained full-stack web applications. Collaborated with cross-functional teams to deliver features that improved user engagement by 40%.',
       tags: ['Node.js', 'React', 'MongoDB'],
+      color: 'from-purple-500/20 to-pink-500/20',
     },
     {
       title: 'Junior Developer',
@@ -30,6 +34,7 @@ const Experience = () => {
       description:
         'Built responsive websites and web applications. Learned industry best practices and contributed to multiple client projects.',
       tags: ['JavaScript', 'HTML/CSS', 'React'],
+      color: 'from-green-500/20 to-emerald-500/20',
     },
   ]
 
@@ -38,7 +43,7 @@ const Experience = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.15,
       },
     },
   }
@@ -49,8 +54,8 @@ const Experience = () => {
       opacity: 1,
       x: 0,
       transition: {
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1],
+        duration: 0.5,
+        ease: [0.16, 1, 0.3, 1],
       },
     },
   }
@@ -59,20 +64,23 @@ const Experience = () => {
     <section
       id="experience"
       ref={ref}
-      className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-white"
+      className="relative py-32 md:py-40 px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16"
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-6">
-            Experience
-          </h2>
-          <div className="h-1 w-20 bg-primary-600 mb-4" />
-          <p className="text-lg text-neutral-600">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-sm font-mono text-primary-400">03.</span>
+            <h2 className="text-4xl md:text-6xl font-bold gradient-text">
+              Experience
+            </h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent" />
+          </div>
+          <p className="text-lg text-neutral-400">
             A journey of growth, learning, and impactful contributions.
           </p>
         </motion.div>
@@ -80,11 +88,11 @@ const Experience = () => {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
+          animate={inView ? 'visible' : 'hidden'}
           className="relative"
         >
           {/* Timeline line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-neutral-200 hidden md:block" />
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500/50 via-primary-500/30 to-transparent hidden md:block" />
 
           <div className="space-y-12">
             {experiences.map((exp, index) => (
@@ -94,34 +102,46 @@ const Experience = () => {
                 className="relative pl-0 md:pl-20"
               >
                 {/* Timeline dot */}
-                <div className="absolute left-6 top-2 w-4 h-4 bg-primary-600 rounded-full border-4 border-white shadow-lg hidden md:block" />
+                <div className="absolute left-6 top-2 w-4 h-4 bg-primary-500 rounded-full border-4 border-neutral-950 shadow-lg hidden md:block z-10" />
 
-                <div className="bg-neutral-50 rounded-xl p-6 md:p-8 hover:shadow-md transition-shadow">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 mb-1">
-                        {exp.title}
-                      </h3>
-                      <p className="text-lg text-neutral-600">{exp.company}</p>
-                    </div>
-                    <span className="text-sm text-neutral-500 font-medium mt-2 md:mt-0">
-                      {exp.period}
-                    </span>
-                  </div>
-                  <p className="text-neutral-700 leading-relaxed mb-4">
-                    {exp.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {exp.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 bg-white text-neutral-600 rounded-md text-sm font-medium"
-                      >
-                        {tag}
+                <motion.div
+                  className={`glass rounded-2xl p-8 hover:glass-strong transition-all duration-300 relative overflow-hidden group will-change-transform`}
+                  whileHover={{ y: -5, scale: 1.01 }}
+                >
+                  {/* Gradient background on hover */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${exp.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                  />
+
+                  <div className="relative z-10">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                      <div>
+                        <h3 className="text-2xl md:text-3xl font-semibold text-white mb-2">
+                          {exp.title}
+                        </h3>
+                        <p className="text-lg text-primary-400 font-medium">
+                          {exp.company}
+                        </p>
+                      </div>
+                      <span className="text-sm text-neutral-400 font-mono mt-2 md:mt-0">
+                        {exp.period}
                       </span>
-                    ))}
+                    </div>
+                    <p className="text-neutral-300 leading-relaxed mb-6">
+                      {exp.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {exp.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-3 py-1.5 bg-white/5 border border-white/10 text-neutral-300 rounded-lg text-sm font-medium hover:border-primary-500/50 hover:text-primary-400 transition-all"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             ))}
           </div>

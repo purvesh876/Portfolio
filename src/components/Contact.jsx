@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { useInView } from 'framer-motion'
-import { useRef } from 'react'
 import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
 
 const Contact = () => {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { ref, inView } = useInView({
+    threshold: 0.15,
+    triggerOnce: true,
+  })
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,7 +16,6 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle form submission here
     console.log('Form submitted:', formData)
     setSubmitted(true)
     setTimeout(() => {
@@ -84,20 +84,23 @@ const Contact = () => {
     <section
       id="contact"
       ref={ref}
-      className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-neutral-50"
+      className="relative py-32 md:py-40 px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16 text-center"
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+          className="mb-20 text-center"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-6">
-            Let's Connect
-          </h2>
-          <div className="h-1 w-20 bg-primary-600 mx-auto mb-4" />
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <span className="text-sm font-mono text-primary-400">06.</span>
+            <h2 className="text-4xl md:text-6xl font-bold gradient-text">
+              Let's Connect
+            </h2>
+            <div className="flex-1 max-w-xs h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          </div>
+          <p className="text-lg text-neutral-400 max-w-2xl mx-auto">
             Have a project in mind or want to collaborate? I'd love to hear from
             you.
           </p>
@@ -107,31 +110,35 @@ const Contact = () => {
           {/* Contact Methods */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h3 className="text-2xl font-semibold text-neutral-900 mb-6">
+            <h3 className="text-2xl font-semibold text-white mb-8">
               Get in Touch
             </h3>
             <div className="space-y-4">
               {contactMethods.map((method, index) => (
-                <a
+                <motion.a
                   key={index}
                   href={method.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 bg-white rounded-lg hover:shadow-md transition-all group"
+                  className="flex items-center gap-4 p-5 glass rounded-xl hover:glass-strong transition-all group will-change-transform"
+                  whileHover={{ x: 5, scale: 1.01 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
                 >
-                  <div className="text-neutral-600 group-hover:text-primary-600 transition-colors">
+                  <div className="text-primary-400 group-hover:text-primary-300 transition-colors">
                     {method.icon}
                   </div>
                   <div>
-                    <p className="text-sm text-neutral-500">{method.label}</p>
-                    <p className="text-neutral-900 font-medium group-hover:text-primary-600 transition-colors">
+                    <p className="text-sm text-neutral-400">{method.label}</p>
+                    <p className="text-white font-medium group-hover:text-primary-400 transition-colors">
                       {method.value}
                     </p>
                   </div>
-                </a>
+                </motion.a>
               ))}
             </div>
           </motion.div>
@@ -139,16 +146,16 @@ const Contact = () => {
           {/* Contact Form */}
           <motion.form
             initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             onSubmit={handleSubmit}
-            className="bg-white rounded-xl p-8 shadow-sm"
+            className="glass rounded-2xl p-8"
           >
             <div className="space-y-6">
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-neutral-700 mb-2"
+                  className="block text-sm font-medium text-neutral-300 mb-2"
                 >
                   Name
                 </label>
@@ -159,7 +166,7 @@ const Contact = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 glass-strong border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500/50 outline-none transition-all text-white placeholder-neutral-500"
                   placeholder="Your name"
                 />
               </div>
@@ -167,7 +174,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-neutral-700 mb-2"
+                  className="block text-sm font-medium text-neutral-300 mb-2"
                 >
                   Email
                 </label>
@@ -178,7 +185,7 @@ const Contact = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 glass-strong border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500/50 outline-none transition-all text-white placeholder-neutral-500"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -186,7 +193,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-medium text-neutral-700 mb-2"
+                  className="block text-sm font-medium text-neutral-300 mb-2"
                 >
                   Message
                 </label>
@@ -197,16 +204,16 @@ const Contact = () => {
                   onChange={handleChange}
                   required
                   rows="5"
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none"
+                  className="w-full px-4 py-3 glass-strong border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500/50 outline-none transition-all resize-none text-white placeholder-neutral-500"
                   placeholder="Your message..."
                 />
               </div>
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-8 py-3 bg-neutral-900 text-white rounded-lg font-medium hover:bg-neutral-800 transition-colors"
+                className="w-full px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-lg font-semibold hover:from-primary-500 hover:to-primary-400 transition-all"
               >
                 {submitted ? 'Message Sent!' : 'Send Message'}
               </motion.button>

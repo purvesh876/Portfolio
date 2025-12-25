@@ -41,15 +41,15 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="bg-neutral-900 text-neutral-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+    <footer className="relative border-t border-white/10 bg-neutral-950/50 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-4">
+            <h3 className="text-2xl font-bold gradient-text-primary mb-4">
               Portfolio
             </h3>
-            <p className="text-neutral-400 leading-relaxed">
+            <p className="text-neutral-400 leading-relaxed text-sm">
               Full-stack developer passionate about creating innovative web
               solutions and meaningful user experiences.
             </p>
@@ -57,15 +57,15 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
+            <h4 className="text-lg font-semibold text-white mb-6">
               Quick Links
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {footerLinks.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    className="text-neutral-400 hover:text-primary-400 transition-colors text-sm"
                   >
                     {link.name}
                   </a>
@@ -76,7 +76,7 @@ const Footer = () => {
 
           {/* Social Links */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Connect</h4>
+            <h4 className="text-lg font-semibold text-white mb-6">Connect</h4>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
                 <motion.a
@@ -84,7 +84,7 @@ const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="p-3 glass rounded-lg text-neutral-400 hover:text-primary-400 transition-colors"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   aria-label={social.name}
@@ -96,8 +96,10 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-neutral-800 pt-8 text-center text-sm text-neutral-500">
-          <p>© {currentYear} Portfolio. All rights reserved.</p>
+        <div className="border-t border-white/10 pt-8 text-center">
+          <p className="text-sm text-neutral-500">
+            © {currentYear} Portfolio. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
